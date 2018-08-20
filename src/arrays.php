@@ -149,12 +149,13 @@ if (!defined("nil")) {
 
 			if (in_array($key, $this->_keys)) {
 
+				$value = $this->_internal[$key];
 				unset($this->_internal[$key]);
 				$this->_reevaluate();
 
 			}
 
-			return $this;
+			return $value;
 
 		}
 
@@ -233,6 +234,19 @@ if (!defined("nil")) {
 
 		function indexOf($value) {
 			return array_search($value, $this->_internal);
+		}
+
+		function intersect($arr) {
+
+			if (is_a($arr, "ArrayUtils\\Arrays")) {
+				$arr = $arr->_internal;
+			}
+			else if (!is_array($arr)) {
+				$arr = [$arr];
+			}
+
+			return new Arrays(array_intersect($this->_internal, $arr));
+
 		}
 
 		function invoke($arg) {
@@ -318,6 +332,10 @@ if (!defined("nil")) {
 
 		function merge($arr = []) {
 
+			if (is_a($arr, Arrays::class)) {
+				$arr = $arr->_internal;
+			}
+
 			if (!is_array($arr)) {
 				$this->_internal[] = $arr;
 			}
@@ -328,6 +346,19 @@ if (!defined("nil")) {
 			$this->_reevaluate();
 
 			return $this;
+
+		}
+
+		function pluck() {
+
+			$keys = func_get_args();
+
+			$return = new Arrays;
+			foreach ($this->_internal as $each) {
+				$return[] = new Arrays(array_values(array_intersect_key($each, array_flip($keys))));
+			}
+
+			return $return;
 
 		}
 

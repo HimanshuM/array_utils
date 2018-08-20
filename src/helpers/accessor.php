@@ -19,7 +19,7 @@ namespace ArrayUtils\Helpers;
 		}
 
 		function offsetExists($offset) {
-			return in_array($offset, $this->_keys);
+			return in_array($offset, $this->_keys, true);
 		}
 
 		function offsetUnset($offset) {
