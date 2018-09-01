@@ -16,7 +16,7 @@ if (!defined("nil")) {
 	define ("nil", Nil::nil());
 }
 
-	final class Arrays implements ArrayAccess, Countable, Iterator, JsonSerializable, Serializable {
+	class Arrays implements ArrayAccess, Countable, Iterator, JsonSerializable, Serializable {
 
 		use Helpers\Accessor;
 		use Helpers\Counter;
@@ -147,6 +147,7 @@ if (!defined("nil")) {
 
 		function delete($key) {
 
+			$value = null;
 			if (in_array($key, $this->_keys)) {
 
 				$value = $this->_internal[$key];

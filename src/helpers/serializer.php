@@ -11,6 +11,8 @@ namespace ArrayUtils\Helpers;
 
 		function unserialize($value) {
 
+			$this->__construct();
+
 			$value = unserialize($value);
 
 			if (!is_array($value)) {
