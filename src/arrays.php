@@ -187,7 +187,7 @@ if (!defined("nil")) {
 
 		function fetch($key) {
 
-			if (isset($this->_keys[$key])) {
+			if (in_array($key, $this->_keys)) {
 				return $this->_internal[$key];
 			}
 
@@ -208,6 +208,16 @@ if (!defined("nil")) {
 				}
 
 			}
+
+		}
+
+		function filter($callback, $flag = 0) {
+
+			if (is_string($callback) && $callback[0] == ":") {
+				return $this->invoke(substr($callback, 1), 1);
+			}
+
+			return new Arrays(array_filter($this->_internal, $callback, $flag));
 
 		}
 
@@ -250,9 +260,17 @@ if (!defined("nil")) {
 
 		}
 
-		function invoke($arg) {
+		function invoke($arg, $map = 0) {
 
-			return new Arrays(array_map(function($e) use ($arg) {
+			$walkers = ["array_map", "array_filter", "array_walk"];
+
+			if ($map >= count($walkers)) {
+				$map = 0;
+			}
+
+			$map = $walkers[$map];
+
+			return new Arrays($map(function($e) use ($arg) {
 
 				if (method_exists($e, $arg)) {
 					return $e->$arg();
@@ -447,6 +465,16 @@ if (!defined("nil")) {
 
 		function values() {
 			return new Arrays(array_values($this->_internal));
+		}
+
+		function walk($callback, $userData = null) {
+
+			if (is_string($callback) && $callback[0] == ":") {
+				return $this->invoke(substr($callback, 1), 2);
+			}
+
+			return new Arrays(array_walk($this->_internal, $callback, $userData));
+
 		}
 
 	}
