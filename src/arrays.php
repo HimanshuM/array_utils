@@ -27,9 +27,9 @@ if (!defined("nil")) {
 
 		use Accessor;
 
-		private $_internal = [];
-		private $_keys = [];
-		private $_position = 0;
+		protected $_internal = [];
+		protected $_keys = [];
+		protected $_position = 0;
 
 		const Ones = [
 			"first",
@@ -410,6 +410,25 @@ if (!defined("nil")) {
 
 		static function range($start, $end, $step = 1) {
 			return new Arrays(range($start, $end, $step));
+		}
+
+		function recursiveMerge($arr = []) {
+
+			if (is_a($arr, Arrays::class)) {
+				$arr = $arr->_internal;
+			}
+
+			if (!is_array($arr)) {
+				$this->_internal[] = $arr;
+			}
+			else {
+				$this->_internal = array_merge_recursive($this->_internal, $arr);
+			}
+
+			$this->_reevaluate();
+
+			return $this;
+
 		}
 
 		function _reevaluate() {

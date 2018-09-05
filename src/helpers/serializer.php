@@ -20,6 +20,7 @@ namespace ArrayUtils\Helpers;
 			}
 
 			$this->_internal = $value;
+			$this->_reevaluate();
 
 		}
 
