@@ -85,30 +85,6 @@ if (!defined("nil")) {
 
 		}
 
-		/*function __get($attr) {
-
-			if ($attr == "length") {
-				return count($this->_internal);
-			}
-			if ($attr == "empty") {
-				return empty($this->_internal);
-			}
-
-			return $this->fetchByIndex($attr);
-
-		}*/
-
-		/*function __set($attr, $value) {
-
-			if ($attr == "first") {
-				$this->_internal[$this->_keys[0]] = $value;
-			}
-			else if ($attr == "last") {
-				$this->_internal[$this->_keys[count($this->_keys) - 1]] = $value;
-			}
-
-		}*/
-
 		function __debugInfo() {
 			return $this->_internal;
 		}
@@ -145,6 +121,18 @@ if (!defined("nil")) {
 
 		}
 
+		protected function copyFrom($array) {
+
+			if (!is_a($array, Arrays::class)) {
+				return false;
+			}
+
+			$this->_keys = $array->_keys;
+			$this->_internal = $array->_internal;
+			$this->_position = $array->_position;
+
+		}
+
 		function delete($key) {
 
 			$value = null;
@@ -178,7 +166,7 @@ if (!defined("nil")) {
 		}
 
 		function exists($key) {
-			return in_array($key, $this->_keys);
+			return in_array($key, $this->_keys, true);
 		}
 
 		static function explode($delimiter, $string) {
@@ -245,6 +233,19 @@ if (!defined("nil")) {
 
 		function indexOf($value) {
 			return array_search($value, $this->_internal);
+		}
+
+		function ignore($keys = []) {
+
+			if (is_a($keys, Arrays::class)) {
+				$keys = $keys->_internal;
+			}
+			else if (!is_array($keys)) {
+				$keys = [$keys];
+			}
+
+			return new Arrays(array_diff_key($this->_internal, array_flip($keys)));
+
 		}
 
 		function intersect($arr) {
@@ -368,6 +369,16 @@ if (!defined("nil")) {
 
 		}
 
+		function pick($keys = []) {
+
+			if (is_a($keys, Arrays::class)) {
+				$keys = $keys->_internal;
+			}
+
+			return new Arrays(array_intersect_key($this->_internal, array_flip($keys)));
+
+		}
+
 		function pluck() {
 
 			$keys = func_get_args();
@@ -455,6 +466,7 @@ if (!defined("nil")) {
 			}
 
 			return new Arrays(array_slice($this->_internal, $offset));
+
 		}
 
 		function slice($offset = 0, $length = null, $preserveKey = false) {
