@@ -9,7 +9,13 @@ namespace ArrayUtils\Helpers;
 		}
 
 		public function current() {
+
+			if (is_array($this->_internal[$this->_keys[$this->_position]])) {
+				$this->_internal[$this->_keys[$this->_position]] = new static($this->_internal[$this->_keys[$this->_position]]);
+			}
+
 			return $this->_internal[$this->_keys[$this->_position]];
+
 		}
 
 		public function key() {
