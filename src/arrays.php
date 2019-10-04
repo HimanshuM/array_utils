@@ -170,10 +170,31 @@ if (!defined("nil")) {
 		}
 
 		static function explode($delimiter, $string) {
-			return new Arrays(explode($delimiter, $string));
+			return new static(explode($delimiter, $string));
 		}
 
 		function fetch($key) {
+
+			if (is_a($key, Arrays::class)) {
+				$key = $key->_internal;
+			}
+
+			if (is_array($key)) {
+
+				if (!empty($values = array_intersect_key($this->_internal, array_flip($key)))) {
+					return new static($values);
+				}
+
+			}
+			else if (in_array($key, $this->_keys, true)) {
+
+				if (!is_array(($value = $this->_internal[$key]))) {
+					return $value;
+				}
+
+				return new static($value);
+
+			}
 
 			if (in_array($key, $this->_keys)) {
 				return $this->_internal[$key];
