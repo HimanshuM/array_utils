@@ -487,15 +487,19 @@ if (!defined("nil")) {
 		}
 
 		static function split($delimiter, $string) {
-			return new Arrays(explode($delimiter, $string));
+			return new static(explode($delimiter, $string));
 		}
 
 		function take($length) {
 			return $this->firstFew($length);
 		}
 
+		function unique($flag = SORT_STRING) {
+			return new static(array_unique($this->_internal, $flag));
+		}
+
 		function values() {
-			return new Arrays(array_values($this->_internal));
+			return new static(array_values($this->_internal));
 		}
 
 		function walk($callback, $userData = null) {
@@ -504,7 +508,7 @@ if (!defined("nil")) {
 				return $this->invoke(substr($callback, 1), 2);
 			}
 
-			return new Arrays(array_walk($this->_internal, $callback, $userData));
+			return new static(array_walk($this->_internal, $callback, $userData));
 
 		}
 
