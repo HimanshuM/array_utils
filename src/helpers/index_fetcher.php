@@ -29,7 +29,7 @@ use StringHelpers\Str;
 					return false;
 				}
 
-				if ($value == Nil::nil()) {
+				if ($value === nil) {
 					return $this->_internal[$index];
 				}
 				else {
