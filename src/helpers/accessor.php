@@ -14,27 +14,29 @@ namespace ArrayUtils\Helpers;
 				$this->_internal[$offset] = $value;
 			}
 
-			$this->_keys = array_keys($this->_internal);
+			$this->_list = array_keys($this->_internal);
+			$this->_keys = array_flip($this->_list);
 
 		}
 
 		function offsetExists($offset) {
-			return in_array($offset, $this->_keys, true);
+			return isset($this->_keys[$offset]);
 		}
 
 		function offsetUnset($offset) {
 
-			if (in_array($offset, $this->_keys)) {
+			if (isset($this->_keys[$offset])) {
 
 				unset($this->_internal[$offset]);
-				array_splice($this->_keys, array_search($offset, $this->_keys), 1);
+				array_splice($this->_list, array_search($offset, $this->_list), 1);
+				$this->_keys = array_flip($this->_list);
 
 			}
 
 		}
 
 		function offsetGet($offset) {
-			return in_array($offset, $this->_keys) ? $this->_internal[$offset] : null;
+			return isset($this->_keys[$offset]) ? $this->_internal[$offset] : null;
 		}
 
 	}

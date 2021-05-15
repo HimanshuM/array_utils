@@ -29,6 +29,7 @@ if (!defined("nil")) {
 
 		protected $_internal = [];
 		protected $_keys = [];
+		protected $_list = [];
 		protected $_position = 0;
 
 		const Ones = [
@@ -117,6 +118,7 @@ if (!defined("nil")) {
 
 			$this->_internal = [];
 			$this->_keys = [];
+			$this->_list = [];
 
 			return $this;
 
@@ -129,6 +131,7 @@ if (!defined("nil")) {
 			}
 
 			$this->_keys = $array->_keys;
+			$this->_list = $array->_list;
 			$this->_internal = $array->_internal;
 			$this->_position = $array->_position;
 
@@ -137,7 +140,7 @@ if (!defined("nil")) {
 		function delete($key) {
 
 			$value = null;
-			if (in_array($key, $this->_keys)) {
+			if (isset($this->_keys[$key])) {
 
 				$value = $this->_internal[$key];
 				unset($this->_internal[$key]);
@@ -167,7 +170,7 @@ if (!defined("nil")) {
 		}
 
 		function exists($key) {
-			return in_array($key, $this->_keys, true);
+			return isset($this->_keys[$key]);
 		}
 
 		static function explode($delimiter, $string) {
@@ -187,7 +190,7 @@ if (!defined("nil")) {
 				}
 
 			}
-			else if (in_array($key, $this->_keys, true)) {
+			else if (isset($this->_keys[$key])) {
 
 				if (!is_array(($value = $this->_internal[$key]))) {
 					return $value;
@@ -195,10 +198,6 @@ if (!defined("nil")) {
 
 				return new static($value);
 
-			}
-
-			if (in_array($key, $this->_keys)) {
-				return $this->_internal[$key];
 			}
 
 			if (func_num_args() == 1) {
@@ -291,9 +290,7 @@ if (!defined("nil")) {
 				$map = 0;
 			}
 
-			$map = $walkers[$map];
-
-			return new static($map(function($e) use ($arg) {
+			$param = function($e) use ($arg) {
 
 				if (method_exists($e, $arg)) {
 					return $e->$arg();
@@ -301,7 +298,14 @@ if (!defined("nil")) {
 
 				return $e->$arg;
 
-			}, $this->_internal));
+			};
+
+			$map = $walkers[$map];
+			if ($map == "array_map") {
+				return new static($map($param, $this->_internal));
+			}
+
+			return new static($map($this->_internal, $param));
 
 		}
 
@@ -310,7 +314,7 @@ if (!defined("nil")) {
 		}
 
 		function keys() {
-			return new static($this->_keys);
+			return new static($this->_list);
 		}
 
 		function last($value = nil) {
@@ -320,10 +324,10 @@ if (!defined("nil")) {
 			}
 
 			if ($value === nil) {
-				return $this->_internal[$this->_keys[count($this->_keys) - 1]];
+				return $this->_internal[$this->_list[count($this->_list) - 1]];
 			}
 
-			$this->_internal[$this->_keys[count($this->_keys) - 1]] = $value;
+			$this->_internal[$this->_list[count($this->_list) - 1]] = $value;
 
 		}
 
@@ -423,7 +427,7 @@ if (!defined("nil")) {
 				return null;
 			}
 
-			array_pop($this->_keys);
+			unset($this->_keys[array_pop($this->_list)]);
 			return array_pop($this->_internal);
 
 		}
@@ -468,7 +472,10 @@ if (!defined("nil")) {
 		}
 
 		function _reevaluate() {
-			$this->_keys = array_keys($this->_internal);
+
+			$this->_list = array_keys($this->_internal);
+			$this->_keys = array_flip($this->_list);
+
 		}
 
 		function shift() {

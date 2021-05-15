@@ -10,16 +10,16 @@ namespace ArrayUtils\Helpers;
 
 		public function current() {
 
-			if (is_array($this->_internal[$this->_keys[$this->_position]])) {
-				$this->_internal[$this->_keys[$this->_position]] = new static($this->_internal[$this->_keys[$this->_position]]);
+			if (is_array($this->_internal[$this->_list[$this->_position]])) {
+				$this->_internal[$this->_list[$this->_position]] = new static($this->_internal[$this->_list[$this->_position]]);
 			}
 
-			return $this->_internal[$this->_keys[$this->_position]];
+			return $this->_internal[$this->_list[$this->_position]];
 
 		}
 
 		public function key() {
-			return $this->_keys[$this->_position];
+			return $this->_list[$this->_position];
 		}
 
 		public function next() {
@@ -27,7 +27,7 @@ namespace ArrayUtils\Helpers;
 		}
 
 		public function valid() {
-			return isset($this->_keys[$this->_position]);
+			return isset($this->_list[$this->_position]);
 		}
 
 	}

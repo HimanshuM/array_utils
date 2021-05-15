@@ -25,7 +25,7 @@ use StringHelpers\Str;
 					return false;
 				}
 
-				if (!in_array($index, $this->_keys)) {
+				if (!in_array($index, $this->_list)) {
 					return false;
 				}
 
